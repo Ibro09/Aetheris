@@ -143,7 +143,9 @@ function buildUrl(baseUrl: string, pathName: string) {
   return `${baseUrl.replace(/\/$/, "")}/${pathName.replace(/^\//, "")}`;
 }
 
-const DB_FILE = path.join(process.cwd(), "server-data.json");
+const DB_FILE =
+  process.env.SERVER_DATA_FILE ||
+  path.join(process.env.NETLIFY ? "/tmp" : process.cwd(), "server-data.json");
 
 const PRICE_TABLE: Record<string, number> = {
   SOL: 140,
@@ -1738,10 +1740,15 @@ async function startServer() {
   });
 }
 
+const currentModulePath =
+  typeof import.meta.url === "string" ? fileURLToPath(import.meta.url) : "";
+
 const isMainModule =
   typeof process !== "undefined" &&
   typeof process.argv[1] === "string" &&
-  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+  ((currentModulePath &&
+    path.resolve(process.argv[1]) === path.resolve(currentModulePath)) ||
+    path.basename(process.argv[1]) === "server.cjs");
 
 if (isMainModule) {
   void startServer();
