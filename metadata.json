@@ -1,0 +1,6 @@
+{
+  "name": "Aetheris",
+  "description": "An advanced, sub-atomic DeFi portfolio manager powered by quantum-orchestrated AI models and real-time yield optimizers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Geist", "Inter", sans-serif;
+
+  --color-primary: #000000;
+  --color-secondary: #77574d;
+  --color-background: #f9f9f9;
+  --color-on-background: #1b1b1b;
+  --color-surface: #f9f9f9;
+  --color-surface-variant: #e2e2e2;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-low: #f3f3f3;
+  --color-on-surface: #1b1b1b;
+  --color-on-surface-variant: #4c4546;
+  --color-outline: #7e7576;
+  --color-outline-variant: #cfc4c5;
+  --color-secondary-fixed: #ffdbd0;
+  --color-on-secondary-fixed-variant: #5d4037;
+  --color-secondary-fixed-dim: #e7bdb1;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+}
+
+/* Custom visual styles matching screenshot specifications */
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.quantum-glow {
+  box-shadow: 0 0 30px rgba(141, 110, 99, 0.08);
+}
+
+.dark-quantum-glow {
+  box-shadow: 0 0 40px rgba(255, 219, 208, 0.15);
+}
+
+/* Custom scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cfc4c5;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #77574d;
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
