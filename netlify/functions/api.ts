@@ -43,6 +43,27 @@ const solanaConnection = new Connection(SOLANA_RPC_URL, "confirmed");
 
 app.use(express.json());
 
+app.get("/api/health", (_req, res) => {
+  res.json({
+    success: true,
+    status: "online",
+    service: "aetheris-api",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.use((req, res, next) => {
+  const originalJson = res.json.bind(res);
+  res.json = ((body: unknown) => {
+    if (body === undefined) {
+      return originalJson({ success: true, data: null });
+    }
+
+    return originalJson(body);
+  }) as typeof res.json;
+  next();
+});
+
 type ChatHistoryMessage = {
   id?: string;
   sender?: "user" | "node";
@@ -856,13 +877,13 @@ app.post("/api/auth/signup", async (req, res) => {
   try {
     const { name, email, password, referral } = req.body;
     if (!name || !email || !password) {
-      return res.status(400).json({ error: "Missing required signup fields." });
+      return res.status(400).json({ success: false, error: "Missing required signup fields." });
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
     const db = await safeReadDb();
     if (db.accounts.some((account) => account.email === normalizedEmail)) {
-      return res.status(409).json({ error: "An account already exists for this email." });
+      return res.status(409).json({ success: false, error: "An account already exists for this email." });
     }
 
     const wallet = createGeneratedWallet();
@@ -904,7 +925,7 @@ app.post("/api/auth/signup", async (req, res) => {
     return res.json({ success: true, account: walletResponse(newAccount) });
   } catch (error: any) {
     console.error("Signup error:", error);
-    return res.status(500).json({ error: "Could not create account." });
+    return res.status(500).json({ success: false, error: "Could not create account." });
   }
 });
 
