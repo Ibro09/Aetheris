@@ -26,8 +26,24 @@ const GITHUB_TOKEN = (process.env.GITHUB_TOKEN || "").trim();
 const GITHUB_MODELS_ENDPOINT = "https://models.github.ai/inference";
 const GITHUB_MODELS_MODEL = "openai/gpt-4o-mini";
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || "").trim();
-const SOLANA_RPC_URL =
-  (process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com").trim();
+const DEFAULT_SOLANA_RPC_URL = "https://api.devnet.solana.com";
+const rawSolanaRpcUrl = (process.env.SOLANA_RPC_URL || "").trim();
+const SOLANA_RPC_URL = rawSolanaRpcUrl || DEFAULT_SOLANA_RPC_URL;
+try {
+  new URL(SOLANA_RPC_URL);
+} catch {
+  console.warn(
+    `Invalid SOLANA_RPC_URL configured. Falling back to ${DEFAULT_SOLANA_RPC_URL}.`,
+  );
+}
+const SAFE_SOLANA_RPC_URL = (() => {
+  try {
+    new URL(SOLANA_RPC_URL);
+    return SOLANA_RPC_URL;
+  } catch {
+    return DEFAULT_SOLANA_RPC_URL;
+  }
+})();
 const YIELD_ONCHAIN_NETWORK = (
   process.env.YIELD_ONCHAIN_NETWORK || "mainnet-beta"
 ).trim();
@@ -38,7 +54,7 @@ const YIELD_PROTOCOL_POOLS: Record<VaultId, string> = {
   raydium: (process.env.RAYDIUM_SOL_USDT_POOL || "").trim(),
   orca: (process.env.ORCA_SOL_USDT_POOL || "").trim(),
 };
-const solanaConnection = new Connection(SOLANA_RPC_URL, "confirmed");
+const solanaConnection = new Connection(SAFE_SOLANA_RPC_URL, "confirmed");
 
 app.use(express.json());
 
@@ -145,8 +161,16 @@ function buildUrl(baseUrl: string, pathName: string) {
 }
 
 const DB_FILE =
-  process.env.SERVER_DATA_FILE ||
-  path.join(process.env.NETLIFY ? os.tmpdir() : process.cwd(), "server-data.json");
+  (process.env.SERVER_DATA_FILE || "").trim() ||
+  path.join(
+    process.env.NETLIFY ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      process.env.LAMBDA_TASK_ROOT ||
+      process.env.AWS_EXECUTION_ENV
+      ? os.tmpdir()
+      : process.cwd(),
+    "server-data.json",
+  );
 
 const PRICE_TABLE: Record<string, number> = {
   SOL: 140,

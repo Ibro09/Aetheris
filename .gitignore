@@ -7,4 +7,3 @@ coverage/
 .env*
 .env.example
 notes.txt
-server-data.json
