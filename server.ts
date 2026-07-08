@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import os from "os";
 import fs from "fs/promises";
 import crypto from "crypto";
 import { fileURLToPath } from "url";
@@ -145,7 +146,7 @@ function buildUrl(baseUrl: string, pathName: string) {
 
 const DB_FILE =
   process.env.SERVER_DATA_FILE ||
-  path.join(process.env.NETLIFY ? "/tmp" : process.cwd(), "server-data.json");
+  path.join(process.env.NETLIFY ? os.tmpdir() : process.cwd(), "server-data.json");
 
 const PRICE_TABLE: Record<string, number> = {
   SOL: 140,
@@ -254,12 +255,13 @@ async function safeReadDb(): Promise<Database> {
       vaultAccounts: parsed.vaultAccounts || {},
     };
   } catch (err) {
-    await fs.writeFile(DB_FILE, JSON.stringify(defaultDatabase, null, 2));
+    await safeWriteDb(defaultDatabase);
     return defaultDatabase;
   }
 }
 
 async function safeWriteDb(db: Database) {
+  await fs.mkdir(path.dirname(DB_FILE), { recursive: true });
   await fs.writeFile(DB_FILE, JSON.stringify(db, null, 2), "utf-8");
 }
 
