@@ -3,7 +3,6 @@ import path from "path";
 import fs from "fs/promises";
 import crypto from "crypto";
 import { fileURLToPath } from "url";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import OpenAI from "openai";
 import {
@@ -41,6 +40,15 @@ const YIELD_PROTOCOL_POOLS: Record<VaultId, string> = {
 const solanaConnection = new Connection(SOLANA_RPC_URL, "confirmed");
 
 app.use(express.json());
+
+app.get("/api/health", (_req, res) => {
+  res.json({
+    success: true,
+    status: "online",
+    service: "aetheris-api",
+    timestamp: new Date().toISOString(),
+  });
+});
 
 type ChatHistoryMessage = {
   id?: string;
@@ -1710,6 +1718,7 @@ function generateFallbackStrategy(prompt: string) {
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     console.log("Configuring Vite Development Middleware...");
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",

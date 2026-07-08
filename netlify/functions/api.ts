@@ -4,7 +4,6 @@ import fs from "fs/promises";
 import crypto from "crypto";
 import { fileURLToPath } from "url";
 import serverless from "serverless-http";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import OpenAI from "openai";
 import {
@@ -1732,6 +1731,7 @@ function generateFallbackStrategy(prompt: string) {
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     console.log("Configuring Vite Development Middleware...");
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
