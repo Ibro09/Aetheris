@@ -3,7 +3,6 @@ import { LogIn, LogOut, Menu, X } from "lucide-react";
 import { Strategy } from "./types";
 import { DEFAULT_ACTIVE_STRATEGY } from "./data";
 import LandingPage from "./components/LandingPage";
-import Dashboard from "./components/Dashboard";
 import AiBuilder from "./components/AiBuilder";
 import TokenAgents from "./components/TokenAgents";
 import YieldVaults from "./components/YieldVaults";
@@ -38,7 +37,6 @@ declare global {
 
 type AppView =
   | "landing"
-  | "dashboard"
   | "yield-vaults"
   | "ai-builder"
   | "referrals"
@@ -173,7 +171,7 @@ export default function App() {
   }, [currentUser?.email]);
 
   const handleHomeNavigation = () => {
-    setActiveView(walletConnected ? "dashboard" : "landing");
+    setActiveView("landing");
   };
 
   const persistSession = (email: string) => {
@@ -203,7 +201,6 @@ export default function App() {
 
   const connectWallet = async () => {
     if (walletConnected) {
-      setActiveView("dashboard");
       return;
     }
 
@@ -263,7 +260,7 @@ export default function App() {
       persistSession(email);
       setAuthOpen(false);
       setAuthForm({ name: "", email: "", password: "" });
-      setActiveView("dashboard");
+      setActiveView("landing");
       setReferralNotice("Logged in successfully.");
       setPendingReferral("");
       if (pendingReferral) {
@@ -308,13 +305,12 @@ export default function App() {
             <button
               onClick={handleHomeNavigation}
               className={`font-mono text-xs font-bold uppercase tracking-wider transition-colors ${
-                activeView === "landing" ||
-                (walletConnected && activeView === "dashboard")
+                activeView === "landing"
                   ? "text-secondary border-b-2 border-secondary pb-1"
                   : "text-on-surface-variant/70 hover:text-primary"
               }`}
             >
-              {walletConnected ? "Dashboard" : "Home"}
+              Home
             </button>
             <button
               onClick={() => setActiveView("yield-vaults")}
@@ -403,12 +399,12 @@ export default function App() {
           <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-3">
             <button
               onClick={() => {
-                setActiveView(walletConnected ? "dashboard" : "landing");
+                setActiveView("landing");
                 setMobileMenuOpen(false);
               }}
               className="text-left text-sm font-bold text-primary py-2"
             >
-              {walletConnected ? "Dashboard" : "Home"}
+              Home
             </button>
             <button
               onClick={() => {
@@ -457,18 +453,6 @@ export default function App() {
             onLaunchDashboard={connectWallet}
             onActivateStrategy={setActiveStrategy}
             activeStrategy={activeStrategy}
-          />
-        ) : activeView === "dashboard" ? (
-          <Dashboard
-            user={currentUser}
-            activeStrategy={activeStrategy}
-            onActivateStrategy={setActiveStrategy}
-            onReturnToLander={() => setActiveView("landing")}
-            onWalletUpdated={(wallet: any) => {
-              setCurrentUser(wallet);
-              setWalletAddress(wallet.address);
-              setWalletConnected(true);
-            }}
           />
         ) : activeView === "yield-vaults" ? (
           <YieldVaults
@@ -602,7 +586,7 @@ export default function App() {
                   onClick={connectWallet}
                   className="rounded-sm bg-primary px-6 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-all hover:bg-secondary"
                 >
-                  {walletConnected ? "Open Dashboard" : "Login / Sign Up"}
+                  {walletConnected ? "Connected" : "Login / Sign Up"}
                 </button>
                 <button
                   onClick={() => setActiveView("landing")}
